@@ -14,12 +14,10 @@
 
 // ssize_t read(int fildes, void *buf, size_t nbyte)
 
-static int	newline_position(char *s, int c)
+static int	newline_position(char *s)
 {
-	char	a;
 	size_t	i;
 
-	a = (char)c;
 	i = 0;
 	while (s[i] != '\n')
 		i++;
@@ -34,15 +32,16 @@ static void	update_stash(char **stash, int i)
 
 	stash_len = ft_strlen(*stash);
 	j = 0;
-	temp = malloc(stash_len - newline_position(*stash, '\n'));
+	temp = malloc(stash_len - newline_position(*stash));
 	if (!temp)
 		return ;
-	while (*stash[i] != '\0')
+	while ((*stash)[i] != '\0')
 	{
-		temp[j] = *stash[i + 1];
+		temp[j] = (*stash)[i + 1];
 		j++;
 		i++;
 	}
+	free(*stash);
 	*stash = temp;
 }
 
@@ -52,7 +51,7 @@ static char	*processing_line(char *stash)
 	int		i;
 
 	i = 0;
-	new_line = malloc((newline_position(stash, '\n') + 1) * sizeof(char));
+	new_line = malloc((newline_position(stash) + 1) * sizeof(char));
 	if (!new_line)
 		return (NULL);
 	while (stash[i] != '\n')
