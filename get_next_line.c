@@ -6,7 +6,7 @@
 /*   By: djanardh <djanardh@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 00:23:48 by djanardh          #+#    #+#             */
-/*   Updated: 2025/04/08 19:40:39 by djanardh         ###   ########.fr       */
+/*   Updated: 2025/04/09 18:16:42 by djanardh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static void	update_stash(char **stash, int i)
 
 	stash_len = ft_strlen(*stash);
 	j = 0;
-	temp = malloc(stash_len - newline_position(*stash));
+	temp = malloc((stash_len - newline_position(*stash)) + 1);
 	if (!temp)
 		return ;
 	while ((*stash)[i] != '\0')
@@ -41,27 +41,28 @@ static void	update_stash(char **stash, int i)
 		j++;
 		i++;
 	}
+	temp[j] = '\0';
 	free(*stash);
 	*stash = temp;
 }
 
-static char	*processing_line(char *stash)
+static char	*processing_line(char **stash)
 {
 	char	*new_line;
 	int		i;
 
 	i = 0;
-	new_line = malloc((newline_position(stash) + 1) * sizeof(char));
+	new_line = malloc((newline_position(*stash) + 1) * sizeof(char));
 	if (!new_line)
 		return (NULL);
-	while (stash[i] != '\n')
+	while ((*stash)[i] != '\n')
 	{
-		new_line[i] = stash[i];
+		new_line[i] = (*stash)[i];
 		i++;
 	}
 	new_line[i] = '\n';
 	new_line[i + 1] = '\0';
-	update_stash(&stash, i);
+	update_stash(stash, i);
 	return (new_line);
 }
 
@@ -79,7 +80,7 @@ char	*get_next_line(int fd)
 		return (free(buf), NULL);
 	if (!stash)
 		stash = ft_strdup("");
-	while (!(ft_strchr(buf, '\n')) && chars_read > 0)
+	while (!(ft_strchr(stash, '\n')) && chars_read > 0)
 	{
 		chars_read = read(fd, buf, BUFFER_SIZE);
 		if (chars_read <= 0)
@@ -88,7 +89,7 @@ char	*get_next_line(int fd)
 		stash = ft_strjoin(stash, buf);
 	}
 	if (ft_strchr(stash, '\n'))
-		return (free(buf), processing_line(stash));
+		return (free(buf), processing_line(&stash));
 	if (chars_read <= 0)
 		return (stash);
 	return (stash);
