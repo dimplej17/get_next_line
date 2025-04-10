@@ -6,7 +6,7 @@
 /*   By: djanardh <djanardh@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 00:23:48 by djanardh          #+#    #+#             */
-/*   Updated: 2025/04/09 18:16:42 by djanardh         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:49:32 by djanardh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,14 @@ static int	newline_position(char *s)
 {
 	size_t	i;
 
+	if (!s)
+		return (-1);
 	i = 0;
-	while (s[i] != '\n')
+	while (s[i] && s[i] != '\n')
 		i++;
-	return (i);
+	if (s[i] == '\n')
+		return (i);
+	return (-1);
 }
 
 static void	update_stash(char **stash, int i)
@@ -30,40 +34,51 @@ static void	update_stash(char **stash, int i)
 	char	*temp;
 	size_t	stash_len;
 
-	stash_len = ft_strlen(*stash);
 	j = 0;
-	temp = malloc((stash_len - newline_position(*stash)) + 1);
+	if (!(*stash)[i + 1])
+	{
+		free(*stash);
+		*stash = NULL;
+		return ;
+	}
+	stash_len = ft_strlen(*stash);
+	temp = malloc((stash_len - i) * sizeof(char));
 	if (!temp)
 		return ;
-	while ((*stash)[i] != '\0')
-	{
-		temp[j] = (*stash)[i + 1];
-		j++;
-		i++;
-	}
+	i++;
+	while ((*stash)[i])
+		temp[j++] = (*stash)[i++];
 	temp[j] = '\0';
 	free(*stash);
 	*stash = temp;
 }
 
-static char	*processing_line(char **stash)
+static char	*extract_line(char **stash)
 {
-	char	*new_line;
 	int		i;
+	char	*line;
+	int		nl_pos;
 
 	i = 0;
-	new_line = malloc((newline_position(*stash) + 1) * sizeof(char));
-	if (!new_line)
-		return (NULL);
-	while ((*stash)[i] != '\n')
+	nl_pos = newline_position(*stash);
+	if (nl_pos == -1)
 	{
-		new_line[i] = (*stash)[i];
+		line = ft_strdup(*stash);
+		free(*stash);
+		*stash = NULL;
+		return (line);
+	}
+	line = malloc(nl_pos + 2);
+	if (!line)
+		return (NULL);
+	while (i <= nl_pos)
+	{
+		line[i] = (*stash)[i];
 		i++;
 	}
-	new_line[i] = '\n';
-	new_line[i + 1] = '\0';
-	update_stash(stash, i);
-	return (new_line);
+	line[i] = '\0';
+	update_stash(stash, nl_pos);
+	return (line);
 }
 
 char	*get_next_line(int fd)
@@ -72,27 +87,46 @@ char	*get_next_line(int fd)
 	int			chars_read;
 	static char	*stash;
 
-	chars_read = 1;
+	stash = NULL;
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, NULL, 0) < 0)
+	{
+		if (stash)
+			free(stash);
+		stash = NULL;
+		return (NULL);
+	}
 	buf = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!buf)
 		return (NULL);
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, buf, 0) < 0)
-		return (free(buf), NULL);
-	if (!stash)
-		stash = ft_strdup("");
-	while (!(ft_strchr(stash, '\n')) && chars_read > 0)
+	chars_read = 1;
+	while (chars_read > 0)
 	{
+		if (stash && ft_strchr(stash, '\n'))
+			break ;
 		chars_read = read(fd, buf, BUFFER_SIZE);
 		if (chars_read <= 0)
-			return (free(buf), NULL);
+			break ;
 		buf[chars_read] = '\0';
-		stash = ft_strjoin(stash, buf);
+		if (!stash)
+			stash = ft_strdup(buf);
+		else
+			stash = ft_strjoin_free(stash, buf);
+		if (!stash)
+		{
+			free(buf);
+			return (NULL);
+		}
 	}
-	if (ft_strchr(stash, '\n'))
-		return (free(buf), processing_line(&stash));
-	if (chars_read <= 0)
-		return (stash);
-	return (stash);
+	free(buf);
+	if (!stash)
+		return (NULL);
+	if (chars_read <= 0 && !ft_strlen(stash))
+	{
+		free(stash);
+		stash = NULL;
+		return (NULL);
+	}
+	return (extract_line(&stash));
 }
 
 int	main(void)

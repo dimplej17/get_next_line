@@ -6,7 +6,7 @@
 /*   By: djanardh <djanardh@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 00:23:58 by djanardh          #+#    #+#             */
-/*   Updated: 2025/04/07 17:16:50 by djanardh         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:38:02 by djanardh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,21 +105,47 @@ size_t	ft_strlcat(char *dst, char *src, size_t dstsize)
 	return (dst_len + src_len);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_strjoin_free(char *s1, char *s2)
 {
-	size_t s1_len;
-	size_t s2_len;
-	char *new_string;
-	size_t newstr_len;
+	size_t	s1_len;
+	size_t	s2_len;
+	char	*new_string;
+	size_t	newstr_len;
 
-	s1_len = ft_strlen(s1);
+	if (s1)
+		s1_len = ft_strlen(s1);
+	else
+		s1_len = 0;
 	s2_len = ft_strlen(s2);
 	newstr_len = s1_len + s2_len + 1;
 	new_string = malloc(newstr_len);
 	if (new_string == NULL)
 		return (NULL);
-	ft_strlcpy(new_string, s1, newstr_len);
+	if (s1)
+		ft_strlcpy(new_string, s1, s1_len + 1);
+	else
+		new_string[0] = '\0';
 	ft_strlcat(new_string, s2, newstr_len);
-	new_string[newstr_len - 1] = '\0';
+	if (s1)
+		free(s1);
 	return (new_string);
 }
+
+// char	*ft_strjoin(char *s1, char *s2)
+// {
+// 	size_t s1_len;
+// 	size_t s2_len;
+// 	char *new_string;
+// 	size_t newstr_len;
+
+// 	s1_len = ft_strlen(s1);
+// 	s2_len = ft_strlen(s2);
+// 	newstr_len = s1_len + s2_len + 1;
+// 	new_string = malloc(newstr_len);
+// 	if (new_string == NULL)
+// 		return (NULL);
+// 	ft_strlcpy(new_string, s1, newstr_len);
+// 	ft_strlcat(new_string, s2, newstr_len);
+// 	new_string[newstr_len - 1] = '\0';
+// 	return (new_string);
+// }
