@@ -6,7 +6,7 @@
 /*   By: djanardh <djanardh@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 00:23:58 by djanardh          #+#    #+#             */
-/*   Updated: 2025/04/10 15:38:02 by djanardh         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:49:20 by djanardh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ size_t	ft_strlen(char *s)
 {
 	int	count;
 
+	if (!s)
+		return (0);
 	count = 0;
 	while (s[count] != '\0')
 		count++;
@@ -120,7 +122,11 @@ char	*ft_strjoin_free(char *s1, char *s2)
 	newstr_len = s1_len + s2_len + 1;
 	new_string = malloc(newstr_len);
 	if (new_string == NULL)
+	{
+		if (s1)
+			free(s1);
 		return (NULL);
+	}
 	if (s1)
 		ft_strlcpy(new_string, s1, s1_len + 1);
 	else
@@ -130,6 +136,38 @@ char	*ft_strjoin_free(char *s1, char *s2)
 		free(s1);
 	return (new_string);
 }
+
+// static char	*ft_strjoin_free(char *s1, char *s2)
+// {
+// 	char	*result;
+// 	int		i;
+// 	int		j;
+// 	size_t	len1;
+// 	size_t	len2;
+
+// 	len1 = ft_strlen_safe(s1);
+// 	len2 = ft_strlen_safe(s2);
+// 	result = malloc(len1 + len2 + 1);
+// 	if (!result)
+// 	{
+// 		if (s1)
+// 			free(s1);
+// 		return (NULL);
+// 	}
+// 	i = 0;
+// 	while (s1 && s1[i])
+// 	{
+// 		result[i] = s1[i];
+// 		i++;
+// 	}
+// 	j = 0;
+// 	while (s2 && s2[j])
+// 		result[i++] = s2[j++];
+// 	result[i] = '\0';
+// 	if (s1)
+// 		free(s1);
+// 	return (result);
+// }
 
 // char	*ft_strjoin(char *s1, char *s2)
 // {
