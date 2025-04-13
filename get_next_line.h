@@ -20,7 +20,6 @@
 
 char	*get_next_line(int fd);
 size_t	ft_strlen(char *s);
-char	*ft_strchr(char *s, int c);
 char	*ft_strdup(char *s1);
 size_t	ft_strlcpy(char *dst, char *src, size_t dstsize);
 size_t	ft_strlcat(char *dst, char *src, size_t dstsize);
