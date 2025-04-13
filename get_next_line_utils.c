@@ -24,28 +24,6 @@ size_t	ft_strlen(char *s)
 	return (count);
 }
 
-char	*ft_strchr(char *s, int c)
-{
-	char	a;
-	size_t	i;
-	size_t	s_len;
-
-	a = (char)c;
-	i = 0;
-	s_len = ft_strlen(s);
-	if (a == '\0')
-		return ((char *)&s[s_len]);
-	while (s[i] != '\0')
-	{
-		if (s[i] == a)
-		{
-			return ((char *)&s[i]);
-		}
-		i++;
-	}
-	return (NULL);
-}
-
 char	*ft_strdup(char *s1)
 {
 	char	*s2;
@@ -136,54 +114,3 @@ char	*ft_strjoin_free(char *s1, char *s2)
 		free(s1);
 	return (new_string);
 }
-
-// static char	*ft_strjoin_free(char *s1, char *s2)
-// {
-// 	char	*result;
-// 	int		i;
-// 	int		j;
-// 	size_t	len1;
-// 	size_t	len2;
-
-// 	len1 = ft_strlen_safe(s1);
-// 	len2 = ft_strlen_safe(s2);
-// 	result = malloc(len1 + len2 + 1);
-// 	if (!result)
-// 	{
-// 		if (s1)
-// 			free(s1);
-// 		return (NULL);
-// 	}
-// 	i = 0;
-// 	while (s1 && s1[i])
-// 	{
-// 		result[i] = s1[i];
-// 		i++;
-// 	}
-// 	j = 0;
-// 	while (s2 && s2[j])
-// 		result[i++] = s2[j++];
-// 	result[i] = '\0';
-// 	if (s1)
-// 		free(s1);
-// 	return (result);
-// }
-
-// char	*ft_strjoin(char *s1, char *s2)
-// {
-// 	size_t s1_len;
-// 	size_t s2_len;
-// 	char *new_string;
-// 	size_t newstr_len;
-
-// 	s1_len = ft_strlen(s1);
-// 	s2_len = ft_strlen(s2);
-// 	newstr_len = s1_len + s2_len + 1;
-// 	new_string = malloc(newstr_len);
-// 	if (new_string == NULL)
-// 		return (NULL);
-// 	ft_strlcpy(new_string, s1, newstr_len);
-// 	ft_strlcat(new_string, s2, newstr_len);
-// 	new_string[newstr_len - 1] = '\0';
-// 	return (new_string);
-// }
